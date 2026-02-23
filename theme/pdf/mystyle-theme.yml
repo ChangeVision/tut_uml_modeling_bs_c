@@ -139,7 +139,7 @@ section:
 
 title_page:
   align: center
-  background_color: DAF0EA
+  background_color: ebcdf1
   title:
     top: 20%
     font_family: $heading_font_family

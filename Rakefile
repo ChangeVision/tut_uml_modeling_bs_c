@@ -15,7 +15,7 @@ CSS_FILE_PATH = "#{CSS_DIR}/#{CSS_FILE}"
 
 # htmlやpdfを作成したいadocファイルのリスト（ALL_IMAGE_DIRS のように列挙したり、要素を追加してもよい）
 ADOCS = FileList['**/*.adoc'].exclude(/^vendor/).exclude(/^lib/)
-TARGET_ADOCS = ['tut_uml_modeling_bs.adoc'].freeze
+TARGET_ADOCS = ['tut_uml_modeling_bs_c.adoc'].freeze
 
 # マルチページで生成される（そのためadocと対応しない）HTMLのリスト
 MULTI_HTMLS = FileList['**/_*.html']
@@ -43,16 +43,16 @@ CLOBBER.concat PDFS
 
 desc 'Build multi/full HTML and PDF file'
 # task :default => [:html, :pdf]
-task :default => [:html_full, :html, :pdf]
+task default: %i[html_full html pdf]
 
 # # desc 'Build full(one file) HTML files'
-# task :html_full => "tut_uml_modeling_bs_full.html"
+# task :html_full => "tut_uml_modeling_bs_c_full.html"
 
 # # desc 'Build multi part HTML files'
-# task :html => "tut_uml_modeling_bs.html"
+# task :html => "tut_uml_modeling_bs_c.html"
 
 # # desc 'Build main PDF files'
-# task :pdf => "tut_uml_modeling_bs.pdf"
+# task :pdf => "tut_uml_modeling_bs_c.pdf"
 
 # rule ".html" => ".adoc" do |t|  # このルールでは対応するadocの更新しか認識できない
 #   make_html( t.source, t.name )
@@ -63,7 +63,7 @@ task :default => [:html_full, :html, :pdf]
 # end
 
 desc 'Show all target adoc files'
-task :adocs => ADOCS do
+task adocs: ADOCS do
   puts "target adocs ==> #{ADOCS}"
 end
 
@@ -73,18 +73,18 @@ def update_revnumber(source, target)
   revno = 0
   vals = CSV.read(revfile)
   vals.each do |line|
-    if line[0] =~/#{html_or_full_or_pdf}/
-      revno = line[1].to_i
-      revno += 1
-      line[1] = revno
-    end
+    next unless line[0] =~ /#{html_or_full_or_pdf}/
+
+    revno = line[1].to_i
+    revno += 1
+    line[1] = revno
   end
   CSV.open(revfile, 'wb') do |csv|
     vals.each do |line|
       csv << line
     end
   end
-  ret = format ":revnumber: %s_%04d\n", html_or_full_or_pdf, revno
+  ret = format(":revnumber: %<path>s %<rev>04d\n",path: html_or_full_or_pdf, rev: revno)
   File.open('revnumber.adoc', 'w+') do |f|
     f.printf ret
   end
@@ -95,7 +95,7 @@ def make_html_full(source, target)
   revno = update_revnumber(source, target)
   revdate = `date "+%Y-%m-%d"`
   puts "Converting #{source} to #{target} (#{revno})."
-  tag_lines = find_tag_lines('codes/score.rb',['main', 'test'])
+  tag_lines = find_tag_lines('codes/score.rb', %w[main test])
   # -a linkcss -a stylesheet=#{CSS_FILE_PATH} はfront_matterに記載した
   `bundle exec asciidoctor -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} -a revdate='#{revdate}' -r #{CODE_STYLE} -r #{LIB_EXT} -r #{LIB_EXT2}  #{source} -o #{target}`
 end

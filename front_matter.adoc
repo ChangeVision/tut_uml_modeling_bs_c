@@ -3,9 +3,9 @@
 :scripts: cjk
 :doctype: book
 :media: prepress
-:doctitle: モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル
+:doctitle: モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）
 :author: 株式会社チェンジビジョン
-:description: この文書は、モデリングツールにastah*を使って、ソフトウェアの開発にUMLを使う方法について学ぶチュートリアルです。
+:description: この文書は、モデリングツールにastah*を使って、ソフトウェアの開発にUMLを使う方法について学ぶチュートリアルです。C言語での実装を通じて学びます。
 // revnumberは別途、文書に応じて revnumber.adocを読み込む
 // :revremark: {docdate}
 // revdate をfront_matterで定義しても原稿の日付と合わないので、コマンドラインで渡す
@@ -63,7 +63,9 @@ endif::[]
 // user defined.
 :astah: astah*
 :uml: UML
-:ruby-version: 2.7.2
+:c-standard: C99
+:gcc-version: gcc 13.x以降
+:clang-version: clang 15.x以降
 
 // 部、章の体裁を変更 lib/heading-treeprocessor.rb を使う
 :part-label: 第%s部
