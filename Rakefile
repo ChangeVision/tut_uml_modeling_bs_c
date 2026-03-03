@@ -31,8 +31,25 @@ LIB_EXT = './lib/heading-treeprocessor.rb'
 LIB_EXT2 = './lib/autoxref-treeprocessor.rb'
 LIB_EXT3 = './lib/asciidoctor-pdf-extensions.rb'
 LIB_EXT4 = './lib/asciidoctor-multipage.rb'
+LIB_HTML_EXT = %w[
+  ./lib/html-converter-custom-abstract.rb
+  ./lib/html-converter-custom-sidebar-caption.rb
+  ./lib/html-converter-custom-video-audio-caption.rb
+].map { |s| "-r #{s}" }.join(' ')
+LIB_PDF_EXT = %w[
+  ./lib/pdf-converter-abstract-paragraphs.rb
+  ./lib/pdf-converter-code-float-wrapping.rb
+  ./lib/pdf-converter-custom-sidebar-caption.rb
+  ./lib/pdf-converter-source-language-label.rb
+  ./lib/pdf-converter-custom-example-caption.rb
+  ./lib/pdf-converter-custom-admonition.rb
+].map { |s| "-r #{s}" }.join(' ')
 
-ALL_IMAGE_DIRS = [IMAGES_DIR, 'callouts']
+# ./lib/pdf-converter-change-bars.rb
+# ./lib/pdf-converter-custom-audio-caption.rb
+# ./lib/pdf-converter-custom-book-section-title.rb
+
+ALL_IMAGE_DIRS = [IMAGES_DIR, 'callouts'].freeze
 ALL_IMAGES = []
 ALL_IMAGE_DIRS.each do |dir|
   ALL_IMAGES.concat(FileList["#{dir}/*"].exclude(/\.pdf$/).exclude(/\.ppt*$/))
@@ -97,7 +114,7 @@ def make_html_full(source, target)
   puts "Converting #{source} to #{target} (#{revno})."
   tag_lines = find_tag_lines('codes/score.rb', %w[main test])
   # -a linkcss -a stylesheet=#{CSS_FILE_PATH} はfront_matterに記載した
-  `bundle exec asciidoctor -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} -a revdate='#{revdate}' -r #{CODE_STYLE} -r #{LIB_EXT} -r #{LIB_EXT2}  #{source} -o #{target}`
+  `bundle exec asciidoctor -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} -r #{CODE_STYLE} #{LIB_EXT} #{LIB_EXT2} #{LIB_HTML_EXT} -a revdate='#{revdate}' #{source} -o #{target}`
 end
 
 def make_html_multi(source, target)
@@ -106,7 +123,7 @@ def make_html_multi(source, target)
   # -a linkcss -a stylesheet=#{CSS_FILE_PATH} はfront_matterに記載した
   puts "Converting #{source} to multi-part html (#{revno})."
   tag_lines = find_tag_lines('codes/score.rb',['main', 'test'])
-  `bundle exec asciidoctor -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} -a revdate='#{revdate}' -r #{LIB_EXT4} -b multipage_html5 -r #{CODE_STYLE} -r #{LIB_EXT} -r #{LIB_EXT2}  #{source} -o #{target}`
+  `bundle exec asciidoctor -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} -a revdate='#{revdate}' -r #{CODE_STYLE} -r #{LIB_EXT} #{LIB_EXT2} #{LIB_EXT4} #{LIB_HTML_EXT} -b multipage_html5 -r  #{source} -o #{target}`
 end
 
 def make_pdf(source, target)
@@ -123,7 +140,7 @@ def make_pdf(source, target)
       -a pdf-stylesdir=#{THEME_DIR} \
       -a pdf-style=#{THEME_FILE} \
       -a pdf-fontsdir=#{FONTS_DIR} \
-      -r #{LIB_EXT} -r #{LIB_EXT2} -r #{LIB_EXT3} \
+      -r #{LIB_EXT} -r #{LIB_EXT2} -r #{LIB_EXT3} #{LIB_PDF_EXT} \
       #{source} --out=#{target}`
 end
 

@@ -101,6 +101,10 @@ block:
   margin_top: 12
   margin_bottom: 12
 
+verse:
+  font_size: $base_font_size_small
+  font_family: GenShinGothic-P
+
 heading:
   align: left
   font_color: 2D466B

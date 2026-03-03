@@ -34,7 +34,12 @@
 :experimental:
 :support-uri:
 :original-support-uri:
-:icons: font
+
+// :icons: font
+// :icon-set: fa
+:icons: image
+:iconsdir: images/icons
+:icontype: svg
 
 :toclevels: 2
 :toc: left
@@ -73,11 +78,20 @@ endif::[]
 :chapter-label: 第%s章
 // :chapter-label: %s
 // :section-label: %s節  // これはやめておく
+:example-caption: 例
 
 // autoxref settings lib/autoxref-treeprocessor.rb を使う
 // :autoxref-sectcaption: %d.%d節  // これはやめておく
 :autoxref-imagecaption: 図 %d.%d
 :autoxref-listingcaption: リスト %d.%d
 :autoxref-tablecaption: 表 %d.%d
+:autoxref-examplecaption: 例 %d.%d
+:autoxref-sidebarcaption: コラム %d
+:autoxref-appendixcaption: 付録 %d.%d
+:autoxref-videocaption: 動画 %d.%d
+:autoxref-audiocaption: 音声 %d.%d
 
-:example-caption: 例
+:multipage-nav-previous-label: 前
+:multipage-nav-up-label: 上
+:multipage-nav-home-label: 先頭
+:multipage-nav-next-label: 次
