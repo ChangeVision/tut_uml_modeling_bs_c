@@ -4,6 +4,7 @@ require 'rake/clean'
 require 'fileutils'
 # require 'hashids'
 require 'csv'
+require 'open3'
 
 Encoding.default_external = 'utf-8'
 
@@ -35,7 +36,7 @@ LIB_HTML_EXT = %w[
   ./lib/html-converter-custom-abstract.rb
   ./lib/html-converter-custom-sidebar-caption.rb
   ./lib/html-converter-custom-video-audio-caption.rb
-].map { |s| "-r #{s}" }.join(' ')
+]
 LIB_PDF_EXT = %w[
   ./lib/pdf-converter-abstract-paragraphs.rb
   ./lib/pdf-converter-code-float-wrapping.rb
@@ -43,7 +44,7 @@ LIB_PDF_EXT = %w[
   ./lib/pdf-converter-source-language-label.rb
   ./lib/pdf-converter-custom-example-caption.rb
   ./lib/pdf-converter-custom-admonition.rb
-].map { |s| "-r #{s}" }.join(' ')
+]
 
 # ./lib/pdf-converter-change-bars.rb
 # ./lib/pdf-converter-custom-audio-caption.rb
@@ -101,7 +102,7 @@ def update_revnumber(source, target)
       csv << line
     end
   end
-  ret = format(":revnumber: %<path>s %<rev>04d\n",path: html_or_full_or_pdf, rev: revno)
+  ret = format(":revnumber: %<path>s %<rev>04d\n", path: html_or_full_or_pdf, rev: revno)
   File.open('revnumber.adoc', 'w+') do |f|
     f.printf ret
   end
@@ -110,38 +111,70 @@ end
 
 def make_html_full(source, target)
   revno = update_revnumber(source, target)
-  revdate = `date "+%Y-%m-%d"`
+  revdate = `date "+%Y-%m-%d"`.chomp
   puts "Converting #{source} to #{target} (#{revno})."
   tag_lines = find_tag_lines('codes/score.rb', %w[main test])
   # -a linkcss -a stylesheet=#{CSS_FILE_PATH} はfront_matterに記載した
-  `bundle exec asciidoctor -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} -r #{CODE_STYLE} #{LIB_EXT} #{LIB_EXT2} #{LIB_HTML_EXT} -a revdate='#{revdate}' #{source} -o #{target}`
+  cmd = ['bundle', 'exec', 'asciidoctor',
+         '-r', CODE_STYLE,
+         '-r', LIB_EXT,
+         '-r', LIB_EXT2,
+         *LIB_HTML_EXT.flat_map { |f| ['-r', f] },
+         '-a', "score_main_start=#{tag_lines[0]}",
+         '-a', "score_test_start=#{tag_lines[1]}",
+         '-a', "revdate=#{revdate}",
+         source, '-o', target]
+  Open3.popen2e(*cmd) do |_in, out_err, wait|
+    puts out_err.read
+    wait.value
+  end
 end
 
 def make_html_multi(source, target)
   revno = update_revnumber(source, target)
-  revdate = `date "+%Y-%m-%d"`
+  revdate = `date "+%Y-%m-%d"`.chomp
   # -a linkcss -a stylesheet=#{CSS_FILE_PATH} はfront_matterに記載した
   puts "Converting #{source} to multi-part html (#{revno})."
-  tag_lines = find_tag_lines('codes/score.rb',['main', 'test'])
-  `bundle exec asciidoctor -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} -a revdate='#{revdate}' -r #{CODE_STYLE} -r #{LIB_EXT} #{LIB_EXT2} #{LIB_EXT4} #{LIB_HTML_EXT} -b multipage_html5 -r  #{source} -o #{target}`
+  tag_lines = find_tag_lines('codes/score.rb', %w[main test])
+  cmd = ['bundle', 'exec', 'asciidoctor',
+         '-r', CODE_STYLE,
+         '-r', LIB_EXT,
+         '-r', LIB_EXT2,
+         '-r', LIB_EXT4,
+         *LIB_HTML_EXT.flat_map { |f| ['-r', f] },
+         '-a', "score_main_start=#{tag_lines[0]}",
+         '-a', "score_test_start=#{tag_lines[1]}",
+         '-a', "revdate=#{revdate}",
+         '-b', 'multipage_html5',
+         source, '-o', target]
+  Open3.popen2e(*cmd) do |_in, out_err, wait|
+    puts out_err.read
+    wait.value
+  end
 end
 
 def make_pdf(source, target)
   revno = update_revnumber(source, target)
-  revdate = `date "+%Y-%m-%d"`
+  revdate = `date "+%Y-%m-%d"`.chomp
   puts "Converting #{source} to #{target} (#{revno}). (this one takes a while)"
   tag_lines = find_tag_lines('codes/score.rb', %w[main test])
-
-  # `bundle exec asciidoctor-pdf -a scripts=cjk -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} -a revdate='#{revdate}'  -r #{CODE_STYLE} -r #{LIB_EXT} -r #{LIB_EXT2} -r #{LIB_EXT3} -a pdf-stylesdir=#{THEME_DIR} -a pdf-style=#{THEME_FILE} -a pdf-fontsdir=#{FONTS_DIR} #{source} --out=#{target}` #  2>/dev/null`
-
-  `bundle exec asciidoctor-pdf -r #{CODE_STYLE} \
-      -a score_main_start=#{tag_lines[0]} -a score_test_start=#{tag_lines[1]} \
-      -a revdate='#{revdate}' \
-      -a pdf-stylesdir=#{THEME_DIR} \
-      -a pdf-style=#{THEME_FILE} \
-      -a pdf-fontsdir=#{FONTS_DIR} \
-      -r #{LIB_EXT} -r #{LIB_EXT2} -r #{LIB_EXT3} #{LIB_PDF_EXT} \
-      #{source} --out=#{target}`
+  cmd = ['bundle', 'exec', 'asciidoctor-pdf',
+         '-r', CODE_STYLE,
+         '-r', LIB_EXT,
+         '-r', LIB_EXT2,
+         '-r', LIB_EXT3,
+         *LIB_PDF_EXT.flat_map { |f| ['-r', f] },
+         '-a', "score_main_start=#{tag_lines[0]}",
+         '-a', "score_test_start=#{tag_lines[1]}",
+         '-a', "revdate=#{revdate}",
+         '-a', "pdf-stylesdir=#{THEME_DIR}",
+         '-a', "pdf-style=#{THEME_FILE}",
+         '-a', "pdf-fontsdir=#{FONTS_DIR}",
+         source, "--out=#{target}"]
+  Open3.popen2e(*cmd) do |_in, out_err, wait|
+    puts out_err.read
+    wait.value
+  end
 end
 
 # コードのtagの（次の）行番号を返す

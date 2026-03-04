@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.26">
+<meta name="description" content="この文書は、モデリングツールにastah*を使って、ソフトウェアの開発にUMLを使う方法について学ぶチュートリアルです。C言語での実装を通じて学びます。">
+<meta name="author" content="株式会社チェンジビジョン">
+<title>モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</title>
+<link rel="stylesheet" href="css/mystyle.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_bibliography" class="book toc2 toc-left">
+<div id="header">
+<h1>モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</h1>
+<div class="details">
+<span id="author" class="author">株式会社チェンジビジョン</span><br>
+<span id="revnumber">バージョン html 0786,</span>
+<span id="revdate">2026-03-05</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">目次</div>
+<p><span class="toc-root"><a href="tut_uml_modeling_bs_c.html">モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</a></span></p><ul class="sectlevel1">
+<li><a href="_preface.html">はじめに</a>
+</li>
+<li><a href="_copyright.html">注意事項</a>
+</li>
+<li><a href="_preparation.html">1. 準備</a>
+</li>
+<li><a href="_structure_design.html">2. スコアシートの構造を調べる</a>
+</li>
+<li><a href="_model_to_code_design.html">3. モデルとコードの対応づけ</a>
+</li>
+<li><a href="_behavior_design.html">4. スコアやフレームの状態を調べる</a>
+</li>
+<li><a href="_program_test.html">5. できあがったプログラムを試す</a>
+</li>
+<li><a href="_summary.html">6. まとめ</a>
+</li>
+<li><a href="_other_diagrams.html">7. 他の図、他の機能など</a>
+</li>
+<li><a href="_appendix-01.html">付録 A: モデルやプログラムの作成例</a>
+</li>
+<li><a href="_bibliography.html"><span class="toc-current">参考文献</span></a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_bibliography"><a class="anchor" href="#_bibliography"></a>参考文献</h2>
+<div class="sectionbody">
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="UMLSPEC"></a>[UMLSPEC] OMG 統一モデリング言語（UNIFIED MODELING LANGUAGE）.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.omg.org/spec/UML/" class="bare">https://www.omg.org/spec/UML/</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a id="robustness01"></a>[robustness01] ワークブック形式で学ぶUMLオブジェクトモデリング.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>ローゼンバーグ, スコット. ソフトバンク. 2002.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a id="robustness02"></a>[robustness02] ユースケース駆動開発実践ガイド.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>ローゼンバーグ, ステファン. 翔泳社. 2007.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a id="rulebook"></a>[rulebook] ボーリング競技規則.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://jbc-iwate.com/service/message/201012101.pdf" class="bare">https://jbc-iwate.com/service/message/201012101.pdf</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a id="kuboaki01"></a>[kuboaki01] 作って身につくC言語入門.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>久保秋. ソシム. 2018.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a id="shibata01"></a>[shibata01] 新・明解C言語 入門編.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>柴田. ソフトバンク. 2021.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a id="learnc"></a>[learnc] オンライン学習サイト</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code><a href="https://www.learn-c.org/" class="bare">https://www.learn-c.org/</a></code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a id="embtdd"></a>[embtdd] テスト駆動開発による組み込みプログラミング&#8201;&#8212;&#8201;C言語とオブジェクト指向で学ぶアジャイルな設計 --.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Grenning, 笹井（訳）, 蛸島（監修）. オライリー. 2013.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div style="page-break-after: always;"></div>
+<hr>
+<div class="paragraph">
+<p>「モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）」</p>
+</div>
+<div class="paragraph">
+<p>発行日 : 2026-03-05<br>
+バージョン : html 0786<br>
+作成者 : 株式会社チェンジビジョン<br>
+本書の内容に関する質問等がありましたら、作成者までお知らせください。</p>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p>← 前: <a href="_appendix-01.html">AppendixA</a> | ↑ 上: <a href="tut_uml_modeling_bs_c.html">モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</a></p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+バージョン html 0786<br>
+最終更新 2026-03-04 11:50:36 +0900
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.min.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: { equationNumbers: { autoNumber: "none" } }
+})
+MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
+  MathJax.InputJax.AsciiMath.postfilterHooks.Add(function (data, node) {
+    if ((node = data.script.parentNode) && (node = node.parentNode) && node.classList.contains("stemblock")) {
+      data.math.root.display = "block"
+    }
+    return data
+  })
+})
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

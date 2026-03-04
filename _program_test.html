@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.26">
+<meta name="description" content="この文書は、モデリングツールにastah*を使って、ソフトウェアの開発にUMLを使う方法について学ぶチュートリアルです。C言語での実装を通じて学びます。">
+<meta name="author" content="株式会社チェンジビジョン">
+<title>モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</title>
+<link rel="stylesheet" href="css/mystyle.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+<style>.toc-current{font-weight: bold;} .toc-root{font-family: "Open Sans","DejaVu Sans",sans-serif;
+                       font-size: 0.9em;} #content{display: flex; flex-direction: column; flex: 1 1 auto;}
+             .nav-footer{text-align: center; margin-top: auto;}
+             .nav-footer > p > a {white-space: nowrap;}</style>
+</head>
+<body id="_program_test" class="book toc2 toc-left">
+<div id="header">
+<h1>モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</h1>
+<div class="details">
+<span id="author" class="author">株式会社チェンジビジョン</span><br>
+<span id="revnumber">バージョン html 0786,</span>
+<span id="revdate">2026-03-05</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">目次</div>
+<p><span class="toc-root"><a href="tut_uml_modeling_bs_c.html">モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</a></span></p><ul class="sectlevel1">
+<li><a href="_preface.html">はじめに</a>
+</li>
+<li><a href="_copyright.html">注意事項</a>
+</li>
+<li><a href="_preparation.html">1. 準備</a>
+</li>
+<li><a href="_structure_design.html">2. スコアシートの構造を調べる</a>
+</li>
+<li><a href="_model_to_code_design.html">3. モデルとコードの対応づけ</a>
+</li>
+<li><a href="_behavior_design.html">4. スコアやフレームの状態を調べる</a>
+</li>
+<li><a href="_program_test.html"><span class="toc-current">5. できあがったプログラムを試す</span></a>
+<ul class="sectlevel2">
+<li><a href="_program_test.html#_プログラムを完成させる">5.1. プログラムを完成させる</a>
+</li>
+<li><a href="_program_test.html#_プログラムをテストする">5.2. プログラムをテストする</a>
+</li>
+<li><a href="_program_test.html#_まとめ_4">5.3. まとめ</a>
+</li>
+</ul>
+</li>
+<li><a href="_summary.html">6. まとめ</a>
+</li>
+<li><a href="_other_diagrams.html">7. 他の図、他の機能など</a>
+</li>
+<li><a href="_appendix-01.html">付録 A: モデルやプログラムの作成例</a>
+</li>
+<li><a href="_bibliography.html">参考文献</a>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_program_test"><a class="anchor" href="#_program_test"></a>5. できあがったプログラムを試す</h2>
+<div class="sectionbody">
+<div class="paragraph lead">
+<p>対応づけルールを使って、モデルから変換して作成したプログラムができあがりました。
+できあがったプログラムを確認し、実際に動かしてみましょう。</p>
+</div>
+<div class="sect2">
+<h3 id="_プログラムを完成させる"><a class="anchor" href="#_プログラムを完成させる"></a>5.1. プログラムを完成させる</h3>
+<div class="paragraph">
+<p>まず、プログラムをテストできるよう、完成させましょう。</p>
+</div>
+<div class="sect3">
+<h4 id="_作成したプログラムを確認する"><a class="anchor" href="#_作成したプログラムを確認する"></a>5.1.1. 作成したプログラムを確認する</h4>
+<div class="paragraph">
+<p>作成したプログラムの全体を <a href="#ruby_all_code01">[ruby_all_code01]</a> に示します。
+みなさんも作成したプログラムの全体を確認しましょう。</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+<div class="sect3">
+<h4 id="_テスト用のプログラムを追加する"><a class="anchor" href="#_テスト用のプログラムを追加する"></a>5.1.2. テスト用のプログラムを追加する</h4>
+<div class="paragraph">
+<p>作成したプログラムの末尾に、テストするためのプログラムを追加します（ <a href="#ruby_all_code02">[ruby_all_code02]</a> ）。
+実際にピン数を与えてスコアを作成しているのは「 <code>game.playing</code> 」の呼び出しです。
+このテストコードでは、ピン数のデータは、1ゲーム分のピン数をまとめています。
+しかし、スコアシートのプログラム本体はピン数を受け取るたびに動作するように作られているので、ピン数を1投球ずつ与える方法でも動かせます。</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_プログラムをテストする"><a class="anchor" href="#_プログラムをテストする"></a>5.2. プログラムをテストする</h3>
+<div class="paragraph">
+<p>テスト用のプログラムも作成できたので、実行してみましょう。</p>
+</div>
+<div class="paragraph">
+<p>コマンドプロンプトを起動して（MacやLinuxならターミナルを起動して）、プログラムを実行します（ <a href="#ruby_all_code03">[ruby_all_code03]</a> ）。</p>
+</div>
+<div class="paragraph">
+<p>出力フォーマットは、左から「フレーム番号」「1投目のピン数」「2投目のピン数」「のべのトータル」「フレームのトータル」「スペアボーナス」「ストライクボーナス」「フレームの状態」です。</p>
+</div>
+<div class="paragraph">
+<p>フレームの状態の変化を追ってみて、フレームのステートマシン図と対応していることを確認してみましょう。</p>
+</div>
+<div class="paragraph">
+<p>動作を確認できるよう、テストプログラムを実行した様子を収めた動画を用意しました。
+このテキストと一緒に配布している資料として <code>videos</code> フォルダに次のファイルを置いてあります。</p>
+</div>
+<div class="ulist">
+<div class="title">実行の様子を収めたビデオ（ <code>videos</code> フォルダにあります）</div>
+<ul>
+<li>
+<p><code>score_rb_demo_win.mp4</code></p>
+</li>
+<li>
+<p><code>score_rb_demo_mac.mov</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_まとめ_4"><a class="anchor" href="#_まとめ_4"></a>5.3. まとめ</h3>
+<div class="paragraph">
+<p>作成したプログラムを、テストコードを使って動かしてみました。
+テストした結果、作成したプログラムが、モデル（クラス図やステートマシン図）に従って動作していることを確認できました。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph nav-footer">
+<p>← 前: <a href="_behavior_design.html">4</a> | ↑ 上: <a href="tut_uml_modeling_bs_c.html">モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</a> | 次: <a href="_summary.html">6</a> →</p>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+バージョン html 0786<br>
+最終更新 2026-03-04 11:50:36 +0900
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.min.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: { equationNumbers: { autoNumber: "none" } }
+})
+MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
+  MathJax.InputJax.AsciiMath.postfilterHooks.Add(function (data, node) {
+    if ((node = data.script.parentNode) && (node = node.parentNode) && node.classList.contains("stemblock")) {
+      data.math.root.display = "block"
+    }
+    return data
+  })
+})
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

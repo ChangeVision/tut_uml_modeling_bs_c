@@ -39,7 +39,14 @@
 // :icon-set: fa
 :icons: image
 :iconsdir: images/icons
+
+ifdef::backend-pdf[]
 :icontype: svg
+endif::[]
+
+ifdef::backend-html5[]
+:icontype: png
+endif::[]
 
 :toclevels: 2
 :toc: left

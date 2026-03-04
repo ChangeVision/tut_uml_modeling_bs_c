@@ -34,3 +34,4 @@ class CustomAbstractHtml5Converter < (Asciidoctor::Converter.for 'html5')
     end
   end
 end
+end
