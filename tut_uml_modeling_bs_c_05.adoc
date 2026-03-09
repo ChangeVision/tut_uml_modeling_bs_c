@@ -36,6 +36,14 @@ include::{sourcesdir}/score/bowling.h[]
 include::{sourcesdir}/score/bowling.c[]
 ----
 
+
+[[c_all_makefile]]
+.`Makefile`
+[source,makefile,linenums,start=1]
+----
+include::{sourcesdir}/score/Makefile[]
+----
+
 <<<<
 
 ==== テスト用のプログラムを追加する

@@ -17,8 +17,31 @@ class HtmlZipper
     @javascripts = []
     @htmls = []
     @base_dir = '.'
-    @codes = %w[score.rb stm_sample.rb] # 要なコードファイルを特定するキーが見当たらないので手で追加
+    @codes = []
     @all_entries = []
+  end
+
+  def collect_adoc_contents(adoc)
+    @base_dir = Pathname.new(adoc).dirname.to_s
+    excludes = %w[revnumber.adoc front_matter.adoc image_size_matter.adoc attributes.adoc]
+    return if excludes.include?(adoc)
+
+    puts "input from: #{adoc}"
+    flines = IO.readlines(adoc)
+    flines.each do |line|
+      line.sub!('{sourcesdir}', 'codes')
+      case line
+      when /include::(.+\.[hc])/
+        code = $1
+        @codes.push(code)
+      when /include::(.+Makefile)/
+        code = $1
+        @codes.push(code)
+      when /include::(.+\.adoc)/
+        adoc2 = $1
+        collect_adoc_contents(adoc2)
+      end
+    end
   end
 
   def collect_html_contents(html_files)
@@ -45,13 +68,6 @@ class HtmlZipper
         end
       end
     end
-    @images.uniq!
-    @csses.uniq!
-    @models.uniq!
-    @videos.uniq!
-    @javascripts.uniq!
-    @htmls.uniq!
-    # @codes.uniq!
   end
 
   def find_contents_location(files)
@@ -90,6 +106,14 @@ class HtmlZipper
 
   def make_zip_archive(zip_name, html_files)
     collect_html_contents(html_files)
+    collect_adoc_contents('tut_uml_modeling_bs_c.adoc')
+    @images.uniq!
+    @csses.uniq!
+    @models.uniq!
+    @videos.uniq!
+    @javascripts.uniq!
+    @htmls.uniq!
+    @codes.uniq!
     find_up_all_contents
     create_zip_archive(zip_name)
     list_zip_entries(zip_name)

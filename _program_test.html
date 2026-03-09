@@ -20,7 +20,7 @@
 <h1>モデルを使ってソフトウェアを開発しよう: UML初学者向けチュートリアル（C言語版）</h1>
 <div class="details">
 <span id="author" class="author">株式会社チェンジビジョン</span><br>
-<span id="revnumber">バージョン html 0795,</span>
+<span id="revnumber">バージョン html 0801,</span>
 <span id="revdate">2026-03-09</span>
 </div>
 <div id="toc" class="toc2">
@@ -568,18 +568,48 @@ void scoresheet_print(const ScoreSheet *sheet) { // <b class="conum">(4)</b>
 }</code></pre>
 </div>
 </div>
+<div id="c_all_makefile" class="listingblock">
+<div class="title">リスト 5.3 <code>Makefile</code></div>
+<div class="content">
+<pre class="prettyprint highlight linenums:1"><code data-lang="makefile"># Makefile for Bowling Score System
+
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -pedantic -O2
+TARGET = bowling
+OBJS = main.o bowling.o
+
+.PHONY: all clean run
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+main.o: main.c bowling.h
+	$(CC) $(CFLAGS) -c main.c
+
+bowling.o: bowling.c bowling.h
+	$(CC) $(CFLAGS) -c bowling.c
+
+clean:
+	rm -f $(TARGET) $(OBJS)
+
+run: $(TARGET)
+	./$(TARGET)</code></pre>
+</div>
+</div>
 <div style="page-break-after: always;"></div>
 </div>
 <div class="sect3">
 <h4 id="_テスト用のプログラムを追加する"><a class="anchor" href="#_テスト用のプログラムを追加する"></a>5.1.2. テスト用のプログラムを追加する</h4>
 <div class="paragraph">
-<p>作成したプログラムの末尾に、テストするためのプログラムを追加します（ <a href="_program_test.html#c_all_code03">リスト 5.3</a> ）。
+<p>作成したプログラムの末尾に、テストするためのプログラムを追加します（ <a href="_program_test.html#c_all_code03">リスト 5.4</a> ）。
 実際にピン数を与えてスコアを作成しているのは「 <code>game.playing</code> 」の呼び出しです。
 このテストコードでは、ピン数のデータは、1ゲーム分のピン数をまとめています。
 しかし、スコアシートのプログラム本体はピン数を受け取るたびに動作するように作られているので、ピン数を1投球ずつ与える方法でも動かせます。</p>
 </div>
 <div id="c_all_code03" class="listingblock">
-<div class="title">リスト 5.3 <code>main.c</code></div>
+<div class="title">リスト 5.4 <code>main.c</code></div>
 <div class="content">
 <pre class="prettyprint highlight linenums:1"><code data-lang="c">/* main.c - ボーリングスコアシステムのメインプログラム */
 #include "bowling.h"
@@ -676,17 +706,17 @@ int main(void) {
 <p>テスト用のプログラムも作成できたので、実行してみましょう。</p>
 </div>
 <div class="paragraph">
-<p>コマンドプロンプトを起動して（MacやLinuxならターミナルを起動して）、プログラムをビルドします（ <a href="_program_test.html#c_all_code04">リスト 5.4</a> ）。</p>
+<p>コマンドプロンプトを起動して（MacやLinuxならターミナルを起動して）、プログラムをビルドします（ <a href="_program_test.html#c_all_code04">リスト 5.5</a> ）。</p>
 </div>
 <div id="c_all_code04" class="listingblock">
-<div class="title">リスト 5.4 <code>bowling</code> プログラムをビルドする</div>
+<div class="title">リスト 5.5 <code>bowling</code> プログラムをビルドする</div>
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="console">C:\Users\（演習用ディレクトリ）&gt;cd score
 C:\Users\（演習用ディレクトリ）&gt;\score&gt; make</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>ビルドできたら、実行しましょう（ <a href="_program_test.html#c_all_code05">リスト 5.5</a> ）。</p>
+<p>ビルドできたら、実行しましょう（ <a href="_program_test.html#c_all_code05">リスト 5.6</a> ）。</p>
 </div>
 <div class="paragraph">
 <p>出力フォーマットは、左から「フレーム番号」「1投目のピン数」「2投目のピン数」「のべのトータル」「フレームのトータル」「スペアボーナス」「ストライクボーナス」「フレームの状態」です。</p>
@@ -695,7 +725,7 @@ C:\Users\（演習用ディレクトリ）&gt;\score&gt; make</code></pre>
 <p>フレームの状態の変化を追ってみて、フレームのステートマシン図と対応していることを確認してみましょう。</p>
 </div>
 <div id="c_all_code05" class="listingblock">
-<div class="title">リスト 5.5 <code>bowling</code> プログラムを実行する</div>
+<div class="title">リスト 5.6 <code>bowling</code> プログラムを実行する</div>
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="console">C:\Users\（演習用ディレクトリ）&gt;\score&gt; ./bowling
 Score Sheet Date: 2022-02-26 02:08:21 +0900(id:0GG70gNRWtk) # <b class="conum">(1)</b>
@@ -842,7 +872,7 @@ C:\Users\（演習用ディレクトリ）&gt;\score&gt;</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-バージョン html 0795<br>
+バージョン html 0801<br>
 最終更新 2026-03-04 11:50:36 +0900
 </div>
 </div>
