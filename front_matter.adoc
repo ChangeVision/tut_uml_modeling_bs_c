@@ -35,17 +35,15 @@
 :support-uri:
 :original-support-uri:
 
-// :icons: font
-// :icon-set: fa
+ifdef::backend-pdf[]
 :icons: image
 :iconsdir: images/icons
-
-ifdef::backend-pdf[]
 :icontype: svg
 endif::[]
 
 ifdef::backend-html5[]
-:icontype: png
+:icons: font
+:icon-set: fa
 endif::[]
 
 :toclevels: 2
